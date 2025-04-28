@@ -43,7 +43,7 @@ bool add_bit (Codigo* c, U8 valor)
 }
 
 
-bool joga_fora_bit (Codigo* c)
+bool disc_bit (Codigo* c)
 {
     if (c->tamanho==0) {
         return false;
