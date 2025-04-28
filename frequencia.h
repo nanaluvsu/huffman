@@ -23,7 +23,7 @@ typedef struct  {
 
 void nova_tabela(freqTable* tbl);
 
-void addByte(U8 byte, freqTable* tbl);
+bool addByte(U8 byte, freqTable* tbl);
 
 void joinOnStart(freqTable* tbl);
 
