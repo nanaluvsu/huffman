@@ -19,14 +19,13 @@ void free_codigo (Codigo* c)
 
 bool add_bit (Codigo* c, U8 valor)
 {
-    if (c->tamanho==c->capacidade)
+    if (c->tamanho==c->capacidade) //checa se o array está cheio
     {
         U8* novo = (U8*)malloc((c->capacidade / 8 + 1 )* sizeof(U8));
         if (novo == NULL) return false;
 
         for(int i = 0; i < c->tamanho / 8 ; i++)
             novo[i] = c->byte[i];
-
         free(c->byte);
         c->byte = novo;
 
@@ -43,7 +42,7 @@ bool add_bit (Codigo* c, U8 valor)
 }
 
 
-bool disc_bit (Codigo* c)
+bool disc_bit (Codigo* c) //descarta o bit menos importante(assumindo que ele é o último do array)
 {
     if (c->tamanho==0) {
         return false;
