@@ -10,6 +10,7 @@ void nova_tabela(freqTable* tbl) {
         
     }
     tbl->qtd_preenchida = 0;
+    //obg augusto
 }
 
 static bool novo_no(ptr_node* novo, ptr_node l, Elemento inf, ptr_node r) {
