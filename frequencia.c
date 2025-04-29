@@ -7,8 +7,9 @@ void nova_tabela(freqTable* tbl) {
     for (U16 i =0; i < 256; i++) {
         tbl->arr[i] = NULL;
 
-        tbl->qtd_preenchida = 0;
+        
     }
+    tbl->qtd_preenchida = 0;
 }
 
 static bool novo_no(ptr_node* novo, ptr_node l, Elemento inf, ptr_node r) {
@@ -65,3 +66,4 @@ void joinOnStart(freqTable* tbl)
         tbl->arr[fst_non_NULL]=NULL;
     }
 }
+
