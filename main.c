@@ -62,31 +62,15 @@ void countChars() {
 
 int main() {
     countChars();
-    Codigo c;
-    if (!novo_codigo(&c)) {
-        printf("meudeus explodiu oq vc fez\n");
+    printf("Huffman gaming\n");
+    printf("Compactando: horuma.mp4\n");
+    FILE *file = fopen("horuma.mp4", "rb");
+    if (file == NULL) {
+        printf("Error opening file.\n");
         return 1;
-    } else {
-        printf("Deu certo, criou :D\n");
     }
-
-    if (!add_bit(&c, 1)) {
-        printf("Deu erro nao adicionou :c\n");
-        free_codigo(&c);
-        return 1;
-    } else {
-        printf("Deu certo, adicionou :D\n");
+    while(fgetc(file) != EOF) {
+        
     }
-
-    if (!disc_bit(&c)) {
-        printf("Deu erro nao jogou fora :c\n");
-        free_codigo(&c);
-        return 1;
-    } else {
-        printf("Deu certo, jogou fora :D\n");
-    }
-
-    free_codigo(&c);
-    
     return 0;
 }

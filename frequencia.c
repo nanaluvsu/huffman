@@ -23,8 +23,7 @@ static bool novo_no(ptr_node* novo, ptr_node l, Elemento inf, ptr_node r) {
     (*novo)->direita = r;
     println("Nó criado.");
     return true;
-    //vou chorar eu n sei usar variavel no commit tchau
-    //analise tenho sono
+
 }
 
 bool addByte(U8 byte, freqTable* tbl) {
