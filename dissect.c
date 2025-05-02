@@ -5,7 +5,7 @@
 #include "frequencia.h"
 #include "lista.c"
 
-Node_arv* novo_nodo(char c, I32 freq) {
+Node_arv* novo_nodo(char c, U8 freq) {
     Node_arv* node = (Node_arv*)malloc(sizeof(Node_arv));
     Elemento el;
     el.byte = c;
@@ -32,7 +32,35 @@ Node_arv* arvoreDeHuffman(freqTable* list) {
     return remove(list);
 }
 
-bool compress(FILE *input, char *out, Codif* arr, int size) {
+void buscaChar(Node_arv *raiz, char *path, U8 nivel, Codif **arr, U8 *size) {
+     if (raiz == NULL) return;
+ 
+     if (raiz->esquerda == NULL && raiz->direita == NULL) {
+         path[nivel] = '\0';
+ 
+         Codif c;
+         c.info = raiz->info.byte;
+         c.codigo = strdup(path);
+ 
+         *arr = realloc(*arr, (*size + 1) * sizeof(Codif));
+         if (*arr == NULL) {
+             printf("Erro ao realocar memória!\n");
+             return;
+         }
+     }
+ 
+     if (raiz->esquerda != NULL) {
+         path[nivel] = '0';
+         buscaChar(raiz->esquerda, path, nivel + 1, arr, size);
+     }
+ 
+     if (raiz->direita != NULL) {
+         path[nivel] = '1';
+         buscaChar(raiz->direita, path, nivel + 1, arr, size);
+     }
+ }
+
+bool compress(FILE *input, char *out, Codif* arr, U8 size) {
    FILE* output = fopen(out, "wb");
 
    U8 buf = 0;
@@ -41,9 +69,9 @@ bool compress(FILE *input, char *out, Codif* arr, int size) {
 
    char c = '\0';
    while ((c = fgetc(input)) != EOF) {
-         for (I32 i = 0; i < size; i++) {
+         for (U8 i = 0; i < size; i++) {
               if (arr[i].info == c) {
-                for (I32 j = 0; arr[i].codigo[j] != '\0'; j++) {
+                for (U8 j = 0; arr[i].codigo[j] != '\0'; j++) {
                      buf <<= 1;
                      if (arr[i].codigo[j] == '1') {
                           buf |= 1;
@@ -63,4 +91,11 @@ bool compress(FILE *input, char *out, Codif* arr, int size) {
          buf <<= (8 - bits);
          fwrite(&buf, sizeof(U8), 1, output);
    }
+}
+
+void CodGenerator(Node_arv *raiz, Codif **vetor, U8 *tamanho) {
+    char caminho[101];
+    *tamanho = 0;
+    *vetor = NULL;
+    SearchCharacters(raiz, caminho, 0, vetor, tamanho);
 }
