@@ -1,5 +1,6 @@
 #include <stdlib.h>
 #include <stdio.h>
+#include <string.h>
 #include "frequencia.h"
 
 
@@ -21,7 +22,6 @@ static bool novo_no(ptr_node* novo, ptr_node l, Elemento inf, ptr_node r) {
     (*novo)->esquerda = l;
     (*novo)->info = inf;
     (*novo)->direita = r;
-    println("Nó criado.");
     return true;
 
 }

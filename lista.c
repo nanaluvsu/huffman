@@ -17,7 +17,7 @@ void insert(freqTable* list, Node_arv* node) {
     list->qtd_preenchida++;
 }
 
-Node_arv* remove(freqTable* list) {
+Node_arv* removeList(freqTable* list) {
     if (list->qtd_preenchida != 0)  { //qtd_preenchida = 10 -> return list->arr[9]
         return list->arr[--list->qtd_preenchida];
     } else {

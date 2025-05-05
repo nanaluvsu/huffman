@@ -1,6 +1,7 @@
 #include <stdio.h>
+#include <string.h>
 #include <stdlib.h>
-#include "lista.c"
+#include "dissect.c"
 #include "frequencia.h"
 #include "frequencia.c"
 
@@ -46,7 +47,7 @@ void countChars() { //mainly for testing purposes
     }
 
     for (int i = 0; i < count; i++) {
-        printf("'%c': %d\n", arrayFreq[i].byte, arrayFreq[i].frequencia);
+        printf("'%c': %u\n", arrayFreq[i].byte, arrayFreq[i].frequencia);
     }
 
     int sum = 0;
@@ -65,11 +66,11 @@ void compact(FILE* file, char* toCompress) {
     }
     
     
-    char outputName[256];
-    strcpy(outputName, toCompress);
-    strcat(outputName, "_out.txt");
+    char output[256];
+    strcpy(output, toCompress);
+    strcat(output, "_out.txt");
     
-    FILE* outFile = fopen(outputName, "w");
+    FILE* outFile = fopen(output, "w");
 
     for (int i = 0; i < 256; i++) {
         if (freq[i] > 0) {
@@ -90,7 +91,7 @@ void compact(FILE* file, char* toCompress) {
     Node_arv* root = arvoreDeHuffman(&list);
 
     Codif *arr;
-    int size;
+    U8 size;
     silly(root, &arr, &size);
 
     fseek(file, 0, SEEK_SET /* SEEK_SET significa 'começo do arquivo'*/);//volta pro começo do arquivo
@@ -99,7 +100,7 @@ void compact(FILE* file, char* toCompress) {
     strcpy(arq, toCompress);
     strcat(arq, "_compressed");
 
-    FileCompress(file, arq, arr, size);
+    compress(file, arq, arr, size);
 
     for (int i = 0; i < size; i++) {
         free(arr[i].codigo);
@@ -109,16 +110,18 @@ void compact(FILE* file, char* toCompress) {
 
 
 int main() {
-    countChars();
+    //countChars();
     printf("Huffman gaming\n");
     printf("Compactando: horuma.mp4\n");
     FILE *file = fopen("horuma.mp4", "rb");
+
     if (file == NULL) {
         printf("Error opening file.\n");
         return 1;
+    } else {
+        compact(file, "horuma.mp4");
+        fclose(file);
     }
-    while(fgetc(file) != EOF) {
-        
-    }
+
     return 0;
 }

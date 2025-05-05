@@ -76,8 +76,8 @@ bool compress(FILE *input, char *out, Codif* arr, U8 size) {
 }
 Node_arv* arvoreDeHuffman(freqTable* list) {
     while (list->qtd_preenchida > 1) {
-        Node_arv* l = removerMenor(list);
-        Node_arv* r = removerMenor(list);
+        Node_arv* l = removeList(list);
+        Node_arv* r = removeList(list);
 
         U8 sum = l->info.frequencia + r->info.frequencia;
         Node_arv* node = novo_nodo('*', sum);
@@ -87,7 +87,7 @@ Node_arv* arvoreDeHuffman(freqTable* list) {
 
         insert(list, node);
     }
-    return removerMenor(list);
+    return removeList(list);
 }
 
 void silly(Node_arv *root, Codif **arr, U8 *size) {
