@@ -1,6 +1,5 @@
 #include <stdio.h>
 #include "tipos.h"
-#include "codigo.h"
 #include "frequencia.h"
 
 void init_list(freqTable* list) {
@@ -9,7 +8,7 @@ void init_list(freqTable* list) {
 }
 
 void insert(freqTable* list, Node_arv* node) {
-    int i = list->qtd_preenchida - 1;
+    U8 i = list->qtd_preenchida - 1;
     while (i >= 0 && list->arr[i]->info.frequencia > node->info.frequencia) {
         list->arr[i + 1] = list->arr[i];
         i--;

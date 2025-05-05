@@ -1,14 +1,11 @@
 #include <stdio.h>
 #include <stdlib.h>
-
-//Main function for Huffman coding
-#include "codigo.h"
-#include "codigo.c"
+#include "lista.c"
 #include "frequencia.h"
 #include "frequencia.c"
 
 
-void countChars() {
+void countChars() { //mainly for testing purposes
     char input[256];
     int chars[256] = {0};
 
@@ -59,6 +56,57 @@ void countChars() {
 
     printf("Total: %d\n", sum);
 }
+
+void compact(FILE* file, char* toCompress) {
+    int freq[256] = {0};
+    char c;
+    while ((c = fgetc(file)) != EOF) {
+        freq[(U8)c]++;
+    }
+    
+    
+    char outputName[256];
+    strcpy(outputName, toCompress);
+    strcat(outputName, "_out.txt");
+    
+    FILE* outFile = fopen(outputName, "w");
+
+    for (int i = 0; i < 256; i++) {
+        if (freq[i] > 0) {
+            fprintf(outFile, "%c %d\n", (char)i, freq[i]);
+        }
+    }
+    fclose(outFile);
+
+    freqTable list;
+    init_list(&list);
+
+    for (int i = 0; i < 256; i++) {
+        if (freq[i] > 0) {
+            insert(&list, novo_nodo((char)i, freq[i]));
+        }
+    }
+
+    Node_arv* root = arvoreDeHuffman(&list);
+
+    Codif *arr;
+    int size;
+    silly(root, &arr, &size);
+
+    fseek(file, 0, SEEK_SET /* SEEK_SET significa 'começo do arquivo'*/);//volta pro começo do arquivo
+
+    char arq[101];
+    strcpy(arq, toCompress);
+    strcat(arq, "_compressed");
+
+    FileCompress(file, arq, arr, size);
+
+    for (int i = 0; i < size; i++) {
+        free(arr[i].codigo);
+    }
+    free(arr);
+}
+
 
 int main() {
     countChars();
