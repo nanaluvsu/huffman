@@ -28,9 +28,3 @@ typedef struct  {
     ptr_node arr[256];
     U16 qtd_preenchida;
 } freqTable;
-
-void nova_tabela(freqTable* tbl);
-
-bool addByte(U8 byte, freqTable* tbl);
-
-void joinOnStart(freqTable* tbl);
