@@ -1,85 +1,14 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
+#include <locale.h>
 #include "tipos.h"
+#include "frequencia.h"
+#include "metodos.c"
 
 
 
-typedef struct {
-    U32 byte; 
-    U64 frequencia;
-} Elemento;
-
-
-typedef struct Node_arv {
-    struct Node_arv* esquerda;
-    Elemento info; 
-    struct Node_arv* direita; 
-} Node_arv;
-
-
-typedef Node_arv* ptr_node;
-
-typedef struct  {
-    ptr_node arr[256];
-    U16 qtd_preenchida;
-} freqTable;
-
-
-
-char *codigoHuffman[256]; // Guarda os códigos de Huffman
-
-
-ptr_node novoNo(U32 byte, U64 freq) {
-    ptr_node no = (ptr_node)malloc(sizeof(Node_arv));
-    no->info.byte = byte;
-    no->info.frequencia = freq;
-    no->esquerda = no->direita = NULL;
-    return no;
-    }
-
-
-void trocar(ptr_node *a, ptr_node *b) {
-    ptr_node temp = *a;
-    *a = *b;
-    *b = temp;
-}
-
-void heapify(freqTable *heap, int i) {
-    int menor = i, esq = 2 * i + 1, dir = 2 * i + 2;
-
-    if (esq < heap->qtd_preenchida && heap->arr[esq]->info.frequencia < heap->arr[menor]->info.frequencia)
-        menor = esq;
-    if (dir < heap->qtd_preenchida && heap->arr[dir]->info.frequencia < heap->arr[menor]->info.frequencia)
-        menor = dir;
-
-    if (menor != i) {
-        trocar(&heap->arr[i], &heap->arr[menor]);
-        heapify(heap, menor);
-    }
-}
-
-ptr_node extrairMin(freqTable *heap) {
-    ptr_node min = heap->arr[0];
-    heap->arr[0] = heap->arr[--heap->qtd_preenchida];
-    heapify(heap, 0);
-    return min;
-}
-
-void inserirHeap(freqTable *heap, ptr_node no) {
-    int i = heap->qtd_preenchida++;
-    heap->arr[i] = no;
-    while (i && heap->arr[i]->info.frequencia < heap->arr[(i - 1) / 2]->info.frequencia) {
-        trocar(&heap->arr[i], &heap->arr[(i - 1) / 2]);
-        i = (i - 1) / 2;
-    }
-}
-
-// =========================
-// Codificação de Huffman
-// =========================
-
-ptr_node construirArvoreHuffman(U64 freq[]) {
+ptr_node constroiArv(U64 freq[]) {
     freqTable heap = {0};
     for (int i = 0; i < 256; i++)
         if (freq[i] > 0)
@@ -96,33 +25,6 @@ ptr_node construirArvoreHuffman(U64 freq[]) {
     return extrairMin(&heap);
 }
 
-void gerarCodigos(ptr_node raiz, char *caminho, int level) {
-    if (!raiz) return;
-
-    if (!raiz->esquerda && !raiz->direita) {
-        caminho[level] = '\0';
-        codigoHuffman[raiz->info.byte] = strdup(caminho);
-        return;
-    }
-
-    caminho[level] = '0';
-    gerarCodigos(raiz->esquerda, caminho, level + 1);
-    caminho[level] = '1';
-    gerarCodigos(raiz->direita, caminho, level + 1);
-}
-
-void salvarArv(ptr_node raiz, FILE *arquivo) {
-    if (!raiz) return;
-
-    if (!raiz->esquerda && !raiz->direita) {
-        fputc('1', arquivo);
-        fputc(raiz->info.byte, arquivo);
-    } else {
-        fputc('0', arquivo);
-        salvarArv(raiz->esquerda, arquivo);
-        salvarArv(raiz->direita, arquivo);
-    }
-}
 
 void compactarArquivo(const char *entrada, const char *saida) {
     FILE *arqEntrada = fopen(entrada, "rb");
@@ -146,7 +48,7 @@ void compactarArquivo(const char *entrada, const char *saida) {
     }
     rewind(arqEntrada);
 
-    ptr_node raiz = construirArvoreHuffman(freq);
+    ptr_node raiz = constroiArv(freq);
     char caminho[256];
     gerarCodigos(raiz, caminho, 0);
 
@@ -179,24 +81,6 @@ void compactarArquivo(const char *entrada, const char *saida) {
     printf("Arquivo compactado com sucesso!\n");
 }
 
-
-Node_arv* desserializarArvore(FILE *arquivo) {
-    int bit = fgetc(arquivo);
-    if (bit == EOF) return NULL;
-
-    if (bit == '1') {
-        unsigned char c = fgetc(arquivo);
-        return novoNo(c, 0);
-    } else {
-        Node_arv *l = desserializarArvore(arquivo);
-        Node_arv *r = desserializarArvore(arquivo);
-        Node_arv *pai = novoNo(0, 0);
-        pai->esquerda = l;
-        pai->direita = r;
-        return pai;
-    }
-}
-
 void descompactarArquivo(const char *entrada, const char *saida) {
     FILE *arqEntrada = fopen(entrada, "rb");
     FILE *arqSaida = fopen(saida, "wb");
@@ -205,7 +89,7 @@ void descompactarArquivo(const char *entrada, const char *saida) {
         return;
     }
 
-    Node_arv *root = desserializarArvore(arqEntrada);
+    Node_arv *root = reconstruct(arqEntrada);
     unsigned int tamanhoOriginal = 0;
     fread(&tamanhoOriginal, sizeof(unsigned int), 1, arqEntrada);
 
@@ -231,6 +115,7 @@ void descompactarArquivo(const char *entrada, const char *saida) {
 
 
 int main() {
+    setlocale(LC_ALL, "Portuguese");
     int opcao;
     char entrada[100], saida[100];
 
