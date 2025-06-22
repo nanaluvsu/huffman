@@ -6,7 +6,7 @@
 #include "frequencia.h"
 #include "metodos.c"
 
-//:D
+//pq n foi o commit ue
 
 ptr_node constroiArv(U64 freq[]) {
     freqTable heap = {0}; // Inicializa a tabela de frequências
