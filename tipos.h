@@ -19,3 +19,8 @@ typedef enum {
     false,
     true
 } bool;
+
+typedef struct {
+    char info;
+    char *codigo;
+} Codif;
